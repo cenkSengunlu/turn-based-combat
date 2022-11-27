@@ -2,26 +2,39 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import FormData from "form-data";
 import axios from "axios";
 import { RootState } from "../../app/store";
+import WarriorSelection from "../../components/WarriorSelection";
 
 export interface SettingsState {
   warriors: {
     id: number;
     name: string;
     hp: number;
-    skills: null;
+    skills: any;
   }[];
-  getWarriorserror: string | null;
+  getWarriorsError?: string | null;
   getWarriorsStatus: string;
-  addWarriorError: string | null;
+  addWarriorError?: string | null;
   addWarriorStatus: string;
+  deleteWarriorError?: string | null;
+  deleteWarriorStatus: string;
+  addSkillError?: string | null;
+  addSkillStatus: string;
+  deleteSkillError?: string | null;
+  deleteSkillStatus: string;
 }
 
 const initialState: SettingsState = {
   warriors: [],
-  getWarriorserror: null,
+  getWarriorsError: null,
   getWarriorsStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
   addWarriorError: null,
   addWarriorStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+  deleteWarriorError: null,
+  deleteWarriorStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+  addSkillError: null,
+  addSkillStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+  deleteSkillError: null,
+  deleteSkillStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
 };
 
 export const addWarrior: any = createAsyncThunk(
@@ -77,12 +90,173 @@ export const getWarriors: any = createAsyncThunk(
   }
 );
 
+export const deleteWarrior: any = createAsyncThunk(
+  "settings/deleteWarrior",
+  async (id: number) => {
+    const formData = new FormData();
+    formData.append("id", id);
+    console.log(id);
+    const response = await axios({
+      method: "delete",
+      url: "https://projectone.proxolab.com/api/warriors",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "probnet-api-key":
+          "wyaSV9F8zFAYeOIfD6fygn9BDyPqP5DCg7DbDBWv6qJl27ZokDeTWzkgou2yLz9X",
+      },
+    })
+      .then(function (response) {
+        console.log(JSON.parse(response.request.response));
+        return JSON.parse(response.request.response);
+      })
+      .catch(function (err) {
+        console.log(err.message);
+      });
+
+    return response;
+  }
+);
+
+export const deleteSkill: any = createAsyncThunk(
+  "settings/deleteSkill",
+  async (id: number) => {
+    const formData = new FormData();
+    formData.append("id", id);
+    console.log(id);
+    const response = await axios({
+      method: "delete",
+      url: "https://projectone.proxolab.com/api/skills",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "probnet-api-key":
+          "wyaSV9F8zFAYeOIfD6fygn9BDyPqP5DCg7DbDBWv6qJl27ZokDeTWzkgou2yLz9X",
+      },
+    })
+      .then(function (response) {
+        console.log(JSON.parse(response.request.response));
+        return JSON.parse(response.request.response);
+      })
+      .catch(function (err) {
+        console.log(err.message);
+      });
+
+    return response;
+  }
+);
+
+export const addSkill: any = createAsyncThunk(
+  "settings/addSkill",
+  async ({
+    skill,
+    skill_index,
+  }: {
+    skill: {
+      warrior_id: number;
+      skill_type: number;
+      skill_type_option: number;
+      point: number;
+    };
+    skill_index: number;
+  }) => {
+    const formData = new FormData();
+    formData.append("WarriorID", skill.warrior_id);
+    formData.append("SkillType", skill.skill_type);
+    formData.append("SkillTypeOption", skill.skill_type_option);
+    formData.append("point", skill.point);
+    const response = await axios({
+      method: "post",
+      url: "https://projectone.proxolab.com/api/skills",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "probnet-api-key":
+          "wyaSV9F8zFAYeOIfD6fygn9BDyPqP5DCg7DbDBWv6qJl27ZokDeTWzkgou2yLz9X",
+      },
+    })
+      .then(function (response) {
+        console.log("------------");
+        console.log(JSON.parse(response.request.response));
+        return {
+          skill: JSON.parse(response.request.response),
+          skill_index: skill_index,
+        };
+      })
+      .catch(function (err) {
+        console.log(err.message);
+      });
+
+    return response;
+  }
+);
+
+export const getOpponent: any = createAsyncThunk(
+  "settings/getOpponent",
+  async (id: number) => {
+    const formData = new FormData();
+    formData.append("id", id);
+    console.log(id);
+    const response = await axios({
+      method: "delete",
+      url: "https://projectone.proxolab.com/api/warriors",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "probnet-api-key":
+          "wyaSV9F8zFAYeOIfD6fygn9BDyPqP5DCg7DbDBWv6qJl27ZokDeTWzkgou2yLz9X",
+      },
+    })
+      .then(function (response) {
+        console.log(JSON.parse(response.request.response));
+        return JSON.parse(response.request.response);
+      })
+      .catch(function (err) {
+        console.log(err.message);
+      });
+
+    return response;
+  }
+);
+
 export const settingsSlice = createSlice({
   name: "settings",
   initialState,
-  reducers: {},
+  reducers: {
+    setSkill: {
+      reducer(state, action: PayloadAction<{ warrior: any }>) {
+        const { warrior } = action.payload;
+        state.warriors = state.warriors.map((w) =>
+          w.id === warrior.id ? warrior : w
+        );
+      },
+      prepare(warrior: string) {
+        return { payload: { warrior } };
+      },
+    },
+
+    updateSkill: {
+      reducer(
+        state,
+        action: PayloadAction<{ id: number; obj: any; skill_index: number }>
+      ) {
+        const { id, obj, skill_index } = action.payload;
+        const warrior = state.warriors.find((warrior) => warrior.id === id);
+        if (warrior) {
+          warrior.skills[skill_index] = {
+            ...warrior.skills[skill_index],
+            ...obj,
+          };
+        }
+      },
+      prepare(id: number, obj: any, skill_index) {
+        return { payload: { id, obj, skill_index } };
+      },
+    },
+  },
   extraReducers(builder) {
     builder
+      // ------------- GET WARRIORS -------------
       .addCase(getWarriors.pending, (state) => {
         state.getWarriorsStatus = "loading";
       })
@@ -93,9 +267,10 @@ export const settingsSlice = createSlice({
       })
       .addCase(getWarriors.rejected, (state, action) => {
         state.getWarriorsStatus = "failed";
-        state.getWarriorserror = action.error.message;
+        state.getWarriorsError = action.error.message;
       })
 
+      // ------------- ADD WARRIOR -------------
       .addCase(addWarrior.pending, (state) => {
         state.addWarriorStatus = "loading";
       })
@@ -105,7 +280,7 @@ export const settingsSlice = createSlice({
           id: action.payload.data.id,
           name: action.payload.data.name,
           hp: action.payload.data.hp,
-          skills: action.payload.data.skills,
+          skills: [],
         };
         console.log(action.payload.data);
         state.warriors.push(newWarrior);
@@ -113,6 +288,69 @@ export const settingsSlice = createSlice({
       .addCase(addWarrior.rejected, (state, action) => {
         state.addWarriorStatus = "failed";
         state.addWarriorError = action.error.message;
+      })
+
+      // ------------- DELETE WARRIOR -------------
+      .addCase(deleteWarrior.pending, (state) => {
+        state.deleteWarriorStatus = "loading";
+      })
+      .addCase(deleteWarrior.fulfilled, (state, action) => {
+        state.deleteWarriorStatus = "succeeded";
+        const deletedWarrior = action.payload.data;
+        const warriors = state.warriors;
+        state.warriors = warriors.filter(
+          (warrior) => warrior.id !== deletedWarrior.id
+        );
+      })
+      .addCase(deleteWarrior.rejected, (state, action) => {
+        state.deleteWarriorStatus = "failed";
+        state.deleteWarriorError = action.error.message;
+      })
+
+      // ------------- ADD SKILL -------------
+      .addCase(addSkill.pending, (state) => {
+        state.addSkillStatus = "loading";
+      })
+      .addCase(addSkill.fulfilled, (state, action) => {
+        state.addSkillStatus = "succeeded";
+        const { skill, skill_index } = action.payload;
+        const warrior = state.warriors.find(
+          (warrior) => warrior.id === skill.data.warrior_id
+        );
+        if (warrior && skill.status !== "error") {
+          warrior.skills[skill_index] = skill.data;
+        }
+      })
+      .addCase(addSkill.rejected, (state, action) => {
+        state.addSkillStatus = "failed";
+        state.addSkillError = action.error.message;
+      })
+
+      // ------------- DELETE SKILL -------------
+      .addCase(deleteSkill.pending, (state) => {
+        state.deleteSkillStatus = "loading";
+      })
+      .addCase(deleteSkill.fulfilled, (state, action) => {
+        state.deleteSkillStatus = "succeeded";
+        const deletedSkill = action.payload.data;
+        const warriors = state.warriors;
+        const warrior = warriors.find(
+          (warrior) => warrior.id === deletedSkill.warrior_id
+        );
+        if (warrior) {
+          warrior.skills = warrior.skills.filter(
+            (skill: any) => skill.id !== deletedSkill.id
+          );
+        }
+
+        const newWarriors = state.warriors.map((w) =>
+          w.id === warrior?.id ? warrior : w
+        );
+        state.warriors = newWarriors;
+      })
+      .addCase(deleteSkill.rejected, (state, action) => {
+        state.deleteSkillStatus = "failed";
+        state.deleteSkillError = action.error.message;
       });
   },
 });
@@ -121,6 +359,6 @@ export const selectWarriors = (state: RootState) => state.settings.warriors;
 export const selectGetWarriorStatus = (state: RootState) =>
   state.settings.getWarriorsStatus;
 
-// export const { addWarrior } = settingsSlice.actions;
+export const { setSkill, updateSkill } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

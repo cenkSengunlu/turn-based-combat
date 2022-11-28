@@ -1,23 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../../app/store";
+import { Skill, Warrior } from "../../app/types";
 
 export interface BattleState {
   isBattle: boolean;
   turn: number;
   isYourTurn: boolean;
-  selectedWarrior: {
-    id: number;
-    name: string;
-    hp: number;
-    skills: any;
-  };
-  opponent: {
-    id: number;
-    name: string;
-    hp: number;
-    skills: any;
-  };
+  selectedWarrior: Warrior;
+  opponent: Warrior;
   winner: string | null;
   startBattleError?: string | null;
   startBattleStatus: string;
@@ -62,7 +53,6 @@ export const startBattle: any = createAsyncThunk(
       },
     })
       .then(function (response) {
-        console.log(JSON.parse(response.request.response));
         return JSON.parse(response.request.response);
       })
       .catch(function (err) {
@@ -92,11 +82,12 @@ export const battleSlice = createSlice({
         const opponent_move = skill_type === 1 ? 2 : 1;
         const opponent_move_option =
           Math.floor(Math.random() * 2) === 0 ? 1 : 2;
-        const opponent_point = opponent.skills.find(
-          (skill: any) =>
-            skill.skill_type === opponent_move &&
-            skill.skill_type_option === opponent_move_option
-        ).point;
+        const opponent_point =
+          opponent.skills.find(
+            (skill: Skill) =>
+              skill.skill_type === opponent_move &&
+              skill.skill_type_option === opponent_move_option
+          )?.point || 0;
 
         if (skill_type === 1) {
           if (skill_type_option === opponent_move_option) {
@@ -133,10 +124,10 @@ export const battleSlice = createSlice({
       },
     },
     selectWarrior: {
-      reducer(state, action: PayloadAction<{ warrior: any }>) {
+      reducer(state, action: PayloadAction<{ warrior: Warrior }>) {
         state.selectedWarrior = action.payload.warrior;
       },
-      prepare(warrior: any) {
+      prepare(warrior: Warrior) {
         return { payload: { warrior } };
       },
     },

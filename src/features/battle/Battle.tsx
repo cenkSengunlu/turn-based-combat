@@ -59,13 +59,15 @@ const Battle = () => {
                   />
                 </div>
               </div>
-              <div className="w-full flex justify-center items-center h-full">
-                <div className="bg-green-500 border-4 border-green-600 text-white rounded-lg py-4 px-6">
-                  <div className="text-3xl flex items-start">
-                    Kazanan: {winner}
+              {winner !== "" && (
+                <div className="w-full flex justify-center items-center h-full">
+                  <div className="bg-green-500 border-4 border-green-600 text-white rounded-lg py-4 px-6">
+                    <div className="text-3xl flex items-start">
+                      Kazanan: {winner}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </>
           )}
         </>

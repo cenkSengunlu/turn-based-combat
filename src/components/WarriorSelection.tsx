@@ -7,6 +7,7 @@ import {
 } from "../features/battle/battleSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
+import { Skill, Warrior } from "../app/types";
 
 const WarriorSelection = () => {
   const dispatch = useDispatch();
@@ -14,22 +15,21 @@ const WarriorSelection = () => {
   const warriors = useSelector(selectWarriors);
   const isBattle = useSelector(selectIsBattle);
   const filteredWarriors = warriors.filter(
-    (warrior: any) =>
+    (warrior: Warrior) =>
       warrior.skills !== null &&
       warrior.skills.length === 4 &&
-      warrior.skills.every((skill: any) => skill.id !== 0)
+      warrior.skills.every((skill: Skill) => skill.id)
   );
-  console.log(filteredWarriors);
   const handleStart = () => {
     const opponent =
       filteredWarriors[Math.floor(Math.random() * filteredWarriors.length)];
     const selected_warrior = filteredWarriors.find(
-      (warrior: any) => select === warrior.id
+      (warrior: Warrior) => select === warrior.id
     );
-    // const id = opponent.id;
-    dispatch(selectWarrior(selected_warrior));
+    if (selected_warrior) {
+      dispatch(selectWarrior(selected_warrior));
+    }
     dispatch(startBattle(opponent.id, selected_warrior));
-    // dispatch(startBattle(opponent.id, selected_warrior));
   };
 
   return (
@@ -45,7 +45,7 @@ const WarriorSelection = () => {
             onChange={(e) => setSelect(Number(e.target.value))}
             disabled={isBattle}
           >
-            {filteredWarriors.map((warrior: any, index: number) => {
+            {filteredWarriors.map((warrior: Warrior, index: number) => {
               return (
                 <option key={index} value={warrior.id}>
                   {warrior.name}

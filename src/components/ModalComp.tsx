@@ -14,7 +14,7 @@ import {
   NumberInputField,
 } from "@chakra-ui/react";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import justNumber from "../functions/justNumber";
 import justText from "../functions/justText";
 import { useDispatch } from "react-redux";
@@ -28,12 +28,6 @@ const ModalComp = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
     name: "",
     hp: 0,
   });
-
-  useEffect(() => {
-    if (warrior.name !== "" && warrior.hp !== 0) {
-      console.log(warrior);
-    }
-  }, [warrior]);
 
   const canSave = [
     warrior.name.trim(),
@@ -97,7 +91,7 @@ const ModalComp = ({ isOpen, onClose }: { isOpen: boolean; onClose: any }) => {
           >
             Kaydet
           </Button>
-          <Button>İptal</Button>
+          <Button onClick={onClose}>İptal</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

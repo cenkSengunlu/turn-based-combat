@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 
 const Settings = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const warriors = useSelector(selectWarriors);
   const getWarriorStatus = useSelector(selectGetWarriorStatus);
   return (
     <div className="h-full w-full flex items-center flex-col pt-10">

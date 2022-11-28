@@ -2,15 +2,10 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import FormData from "form-data";
 import axios from "axios";
 import { RootState } from "../../app/store";
-import WarriorSelection from "../../components/WarriorSelection";
+import { Skill, Warrior } from "../../app/types";
 
 export interface SettingsState {
-  warriors: {
-    id: number;
-    name: string;
-    hp: number;
-    skills: any;
-  }[];
+  warriors: Warrior[];
   getWarriorsError?: string | null;
   getWarriorsStatus: string;
   addWarriorError?: string | null;
@@ -55,7 +50,6 @@ export const addWarrior: any = createAsyncThunk(
       },
     })
       .then(function (response) {
-        console.log(JSON.parse(response.request.response));
         return JSON.parse(response.request.response);
       })
       .catch(function (err) {
@@ -79,7 +73,6 @@ export const getWarriors: any = createAsyncThunk(
       },
     })
       .then(function (response) {
-        console.log(JSON.parse(response.request.response));
         return JSON.parse(response.request.response);
       })
       .catch(function (err) {
@@ -95,7 +88,6 @@ export const deleteWarrior: any = createAsyncThunk(
   async (id: number) => {
     const formData = new FormData();
     formData.append("id", id);
-    console.log(id);
     const response = await axios({
       method: "delete",
       url: "https://projectone.proxolab.com/api/warriors",
@@ -107,7 +99,6 @@ export const deleteWarrior: any = createAsyncThunk(
       },
     })
       .then(function (response) {
-        console.log(JSON.parse(response.request.response));
         return JSON.parse(response.request.response);
       })
       .catch(function (err) {
@@ -123,7 +114,6 @@ export const deleteSkill: any = createAsyncThunk(
   async (id: number) => {
     const formData = new FormData();
     formData.append("id", id);
-    console.log(id);
     const response = await axios({
       method: "delete",
       url: "https://projectone.proxolab.com/api/skills",
@@ -135,7 +125,6 @@ export const deleteSkill: any = createAsyncThunk(
       },
     })
       .then(function (response) {
-        console.log(JSON.parse(response.request.response));
         return JSON.parse(response.request.response);
       })
       .catch(function (err) {
@@ -148,18 +137,7 @@ export const deleteSkill: any = createAsyncThunk(
 
 export const addSkill: any = createAsyncThunk(
   "settings/addSkill",
-  async ({
-    skill,
-    skill_index,
-  }: {
-    skill: {
-      warrior_id: number;
-      skill_type: number;
-      skill_type_option: number;
-      point: number;
-    };
-    skill_index: number;
-  }) => {
+  async ({ skill, skill_index }: { skill: Skill; skill_index: number }) => {
     const formData = new FormData();
     formData.append("WarriorID", skill.warrior_id);
     formData.append("SkillType", skill.skill_type);
@@ -176,8 +154,6 @@ export const addSkill: any = createAsyncThunk(
       },
     })
       .then(function (response) {
-        console.log("------------");
-        console.log(JSON.parse(response.request.response));
         return {
           skill: JSON.parse(response.request.response),
           skill_index: skill_index,
@@ -196,7 +172,6 @@ export const getOpponent: any = createAsyncThunk(
   async (id: number) => {
     const formData = new FormData();
     formData.append("id", id);
-    console.log(id);
     const response = await axios({
       method: "delete",
       url: "https://projectone.proxolab.com/api/warriors",
@@ -208,7 +183,6 @@ export const getOpponent: any = createAsyncThunk(
       },
     })
       .then(function (response) {
-        console.log(JSON.parse(response.request.response));
         return JSON.parse(response.request.response);
       })
       .catch(function (err) {
@@ -224,13 +198,35 @@ export const settingsSlice = createSlice({
   initialState,
   reducers: {
     setSkill: {
-      reducer(state, action: PayloadAction<{ warrior: any }>) {
+      reducer(
+        state,
+        action: PayloadAction<{
+          warrior: Warrior;
+        }>
+      ) {
         const { warrior } = action.payload;
         state.warriors = state.warriors.map((w) =>
           w.id === warrior.id ? warrior : w
         );
       },
-      prepare(warrior: string) {
+      prepare(warrior: Warrior) {
+        return { payload: { warrior } };
+      },
+    },
+
+    removeSkill: {
+      reducer(
+        state,
+        action: PayloadAction<{
+          warrior: Warrior;
+        }>
+      ) {
+        const { warrior } = action.payload;
+        state.warriors = state.warriors.map((w) =>
+          w.id === warrior.id ? warrior : w
+        );
+      },
+      prepare(warrior: Warrior) {
         return { payload: { warrior } };
       },
     },
@@ -262,7 +258,6 @@ export const settingsSlice = createSlice({
       })
       .addCase(getWarriors.fulfilled, (state, action) => {
         state.getWarriorsStatus = "succeeded";
-        console.log(action.payload.data);
         state.warriors = action.payload.data;
       })
       .addCase(getWarriors.rejected, (state, action) => {
@@ -282,7 +277,6 @@ export const settingsSlice = createSlice({
           hp: action.payload.data.hp,
           skills: [],
         };
-        console.log(action.payload.data);
         state.warriors.push(newWarrior);
       })
       .addCase(addWarrior.rejected, (state, action) => {
@@ -339,7 +333,7 @@ export const settingsSlice = createSlice({
         );
         if (warrior) {
           warrior.skills = warrior.skills.filter(
-            (skill: any) => skill.id !== deletedSkill.id
+            (skill: Skill) => skill.id !== deletedSkill.id
           );
         }
 
@@ -359,6 +353,6 @@ export const selectWarriors = (state: RootState) => state.settings.warriors;
 export const selectGetWarriorStatus = (state: RootState) =>
   state.settings.getWarriorsStatus;
 
-export const { setSkill, updateSkill } = settingsSlice.actions;
+export const { setSkill, updateSkill, removeSkill } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

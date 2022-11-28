@@ -3,38 +3,45 @@ import { Select } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { setMove, selectWinner } from "../features/battle/battleSlice";
 import { Progress } from "@chakra-ui/react";
+import { Skill, Warrior } from "../app/types";
 
 const WarriorCard = ({
   warrior,
   isOpponent,
   isYourTurn,
 }: {
-  warrior: any;
+  warrior: Warrior;
   isOpponent: boolean;
   isYourTurn: boolean;
 }) => {
   const [selectedMove, setSelectedMove] = useState<number>();
   const winner = useSelector(selectWinner);
   const dispatch = useDispatch();
-  console.log(warrior);
   const handleMove = () => {
     const skill_type = isYourTurn ? 1 : 2;
     const skill_type_option = selectedMove;
-    const point = warrior.skills.find(
-      (skill: any) =>
-        skill.skill_type === skill_type &&
-        skill.skill_type_option === skill_type_option
-    ).point;
+
+    const point =
+      warrior.skills.find(
+        (skill2: Skill) =>
+          skill2.skill_type === skill_type &&
+          skill2.skill_type_option === skill_type_option
+      )?.point || 0;
     if (skill_type_option) {
       dispatch(setMove(skill_type, skill_type_option, point));
     }
   };
 
   return (
-    <div className="border-2 border-zinc-300 rounded-lg w-36 h-48 p-3 flex flex-col items-center shadow-lg">
-      <div className="text-center">{warrior.name}</div>
-      <div>{warrior.hp}</div>
-      {isYourTurn ? <div>Atak</div> : <div>Defans</div>}
+    <div className="border-2 border-zinc-300 rounded-lg w-40 p-3 flex flex-col items-center shadow-lg">
+      <div className="text-center font-semibold text-lg">{warrior.name}</div>
+      <div className="mt-3 bg-green-500 border-2 border-green-600 rounded-lg w-full text-center text-white font-semibold text-lg">
+        {warrior.hp}
+      </div>
+      <div className="my-3 font-semibold">
+        {isYourTurn ? <div>Atak</div> : <div>Defans</div>}
+      </div>
+
       {!isOpponent && (
         <Select
           placeholder="Seçiniz..."

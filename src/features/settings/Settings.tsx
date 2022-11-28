@@ -19,7 +19,7 @@ const Settings = () => {
         </button>
         <ModalComp isOpen={isOpen} onClose={onClose} />
       </div>
-      <div className="mt-5 w-5/6">
+      <div className="mt-5 w-5/6 overflow-y-auto mb-8">
         {getWarriorStatus === "loading" && <div>Loading...</div>}
         {getWarriorStatus === "succeeded" && <AccordionComp />}
       </div>

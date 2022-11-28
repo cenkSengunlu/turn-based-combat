@@ -88,12 +88,14 @@ const AccordionComp = () => {
                 >
                   Savaşçıyı Sil
                 </button>
-                <DeleteModal
-                  isOpen={isOpen}
-                  onClose={onClose}
-                  id={warrior.id}
-                  delete_option="delete_warrior"
-                />
+                {isOpen && (
+                  <DeleteModal
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    id={warrior.id}
+                    delete_option="delete_warrior"
+                  />
+                )}
               </div>
 
               {warrior.skills &&

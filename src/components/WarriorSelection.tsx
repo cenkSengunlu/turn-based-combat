@@ -1,6 +1,10 @@
 import { Select } from "@chakra-ui/react";
 import { selectWarriors } from "../features/settings/settingsSlice";
-import { startBattle, selectIsBattle } from "../features/battle/battleSlice";
+import {
+  startBattle,
+  selectIsBattle,
+  selectWarrior,
+} from "../features/battle/battleSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 
@@ -19,14 +23,22 @@ const WarriorSelection = () => {
   const handleStart = () => {
     const opponent =
       filteredWarriors[Math.floor(Math.random() * filteredWarriors.length)];
-    dispatch(startBattle(opponent.id));
+    const selected_warrior = filteredWarriors.find(
+      (warrior: any) => select === warrior.id
+    );
+    // const id = opponent.id;
+    dispatch(selectWarrior(selected_warrior));
+    dispatch(startBattle(opponent.id, selected_warrior));
+    // dispatch(startBattle(opponent.id, selected_warrior));
   };
 
   return (
     <>
       <div className="h-fit flex items-center grid grid-cols-3 gap-3 w-4/6">
-        <div className="w-full font-semibold ml-6 text-lg">Savaşçi Seç</div>
-        <div className="w-full -ml-6">
+        <div className="w-full font-semibold text-lg text-center">
+          Savaşçi Seç
+        </div>
+        <div className="w-full">
           <Select
             placeholder="Seçiniz..."
             defaultValue={select}

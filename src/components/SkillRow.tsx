@@ -134,12 +134,14 @@ const SkillRow = ({ skill, index }: any) => {
         >
           Sil
         </button>
-        <DeleteModal
-          isOpen={isOpen}
-          onClose={onClose}
-          id={skill.id}
-          delete_option="delete_skill"
-        />
+        {isOpen && (
+          <DeleteModal
+            isOpen={isOpen}
+            onClose={onClose}
+            id={skill.id}
+            delete_option="delete_skill"
+          />
+        )}
       </div>
     </>
   );

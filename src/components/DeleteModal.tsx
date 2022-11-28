@@ -30,7 +30,7 @@ const DeleteModal = ({
       : dispatch(deleteSkill(id));
     onClose();
   };
-
+  console.log(id);
   return (
     <AlertDialog
       isOpen={isOpen}
